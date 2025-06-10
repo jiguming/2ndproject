@@ -139,5 +139,10 @@ with col2:
     st.image(selected["image"], caption=location_name)
     st.markdown(selected["info"], unsafe_allow_html=True)
 
+# 테스트용 타일 (지구 기준)
+moon_tiles = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+moon_attribution = "© OpenStreetMap contributors"
+
+
 st.markdown("---")
 st.info("이 웹앱은 Streamlit, Folium, Astropy를 이용하여 제작되었습니다. 지도 타일은 LROC Global Mosaic을 기반으로 합니다.")
