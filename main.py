@@ -104,7 +104,7 @@ with col1:
     moon_tiles = "https://s3.amazonaws.com/opmbuilder/301_moon/tiles/w/{z}/{x}/{y}.png"
     moon_attribution = "LRO/LROC/GSFC/ASU"
     
-    # 지도 객체 생성. 선택된 장소를 중심으로 표시
+   # 지도 객체 생성. 선택된 장소를 중심으로 표시
     m = folium.Map(location=coords, zoom_start=5, tiles=moon_tiles, attr=moon_attribution)
 
     # 마커 추가
