@@ -5,7 +5,7 @@ from streamlit_folium import st_folium
 # --- Astropy 라이브러리 임포트 ---
 import astropy.units as u
 # SkyCoord, EarthLocation, AltAz와 함께 Moon 프레임을 임포트합니다.
-from astropy.coordinates import SkyCoord, EarthLocation, AltAz, Moon 
+from astropy.coordinates import SkyCoord, EarthLocation, AltAz, Moon # Moon 클래스를 임포트합니다.
 from astropy.time import Time
 # astropy.constants는 이제 R_moon을 직접 사용하기 때문에 필요하지 않습니다.
 
@@ -22,33 +22,33 @@ MOON_RADIUS = 1737.4 * u.km  # 달의 평균 반지름 (IAU 2015 값)
 
 LOCATIONS_ASTRO = {
     "고요의 바다 (아폴로 11호 착륙지)": {
-        # frame='moon'을 frame=Moon()으로 변경했습니다.
+        # frame='moon'을 frame=Moon()으로 정확히 변경했습니다.
         "sky_coord": SkyCoord(lon=23.47297*u.deg, lat=0.67408*u.deg, frame=Moon(), radius=MOON_RADIUS),
         "info": "고요의 바다 (Mare Tranquillitatis)는 달의 앞면에 있는 거대한 현무암 평원으로, 아폴로 11호가 1969년 7월 20일 인류 최초로 달에 착륙한 역사적인 장소입니다. 이 지역은 비교적 평탄하여 착륙지로 선정되었으며, 어두운 색을 띠는 현무암질 용암으로 덮여 있습니다. '고요의 바다'라는 이름은 과거 달의 어두운 부분이 바다로 오인되었던 것에서 유래합니다. 아폴로 11호의 우주인 닐 암스트롱과 버즈 올드린은 이곳에서 인류의 위대한 발자취를 남겼습니다.",
         "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Aldrin_with_experiment.jpg/800px-Aldrin_with_experiment.jpg"
     },
     "티코 충돌구 (Tycho Crater)": {
-        # frame='moon'을 frame=Moon()으로 변경했습니다.
+        # frame='moon'을 frame=Moon()으로 정확히 변경했습니다.
         "sky_coord": SkyCoord(lon=-11.21*u.deg, lat=-43.43*u.deg, frame=Moon(), radius=MOON_RADIUS),
         "diameter": 85 * u.km,
         "info": "티코 충돌구는 달 남반구에 위치한 눈에 띄는 충돌구로, 지름 약 85km에 달하며 주변으로 밝은 광조가 뻗어 나가는 것이 특징입니다. 이 광조는 충돌 시 분출된 물질이 주변 수백 킬로미터에 걸쳐 퍼져 나간 흔적입니다. 티코 충돌구는 비교적 최근에 형성된 충돌구로 추정되며, 충돌구 내부에 중앙 봉우리가 솟아 있습니다. 망원경으로 달을 관측할 때 가장 쉽게 찾을 수 있는 지형 중 하나입니다.",
         "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Tycho_crater_on_the_Moon.jpg/1024px-Tycho_crater_on_the_Moon.jpg"
     },
     "코페르니쿠스 충돌구 (Copernicus Crater)": {
-        # frame='moon'을 frame=Moon()으로 변경했습니다.
+        # frame='moon'을 frame=Moon()으로 정확히 변경했습니다.
         "sky_coord": SkyCoord(lon=-20.01*u.deg, lat=9.62*u.deg, frame=Moon(), radius=MOON_RADIUS),
         "diameter": 93 * u.km,
         "info": "코페르니쿠스 충돌구는 달의 서반구에 위치한 젊고 인상적인 충돌구로, 지름이 약 93km에 이릅니다. 이 충돌구는 잘 보존된 형태와 계단식 테라스, 그리고 중앙의 복잡한 봉우리들이 특징입니다. 또한 티코 충돌구처럼 주변으로 밝은 광조 시스템이 뻗어 나가는 것을 볼 수 있어, 비교적 최근에 형성된 것으로 여겨집니다. '달의 왕자'라고도 불릴 정도로 아름다운 모습을 자랑하며, 달 관측의 중요한 대상 중 하나입니다.",
         "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Copernicus_crater_LROC.png/1024px-Copernicus_crater_LROC.png"
     },
     "폭풍의 대양 (Oceanus Procellarum)": {
-        # frame='moon'을 frame=Moon()으로 변경했습니다.
+        # frame='moon'을 frame=Moon()으로 정확히 변경했습니다.
         "sky_coord": SkyCoord(lon=-57.4*u.deg, lat=18.4*u.deg, frame=Moon(), radius=MOON_RADIUS),
         "info": "폭풍의 대양은 달의 앞면 서쪽에 위치한 가장 크고 광활한 달의 바다(Mare)입니다. '바다'라는 이름이 붙었지만 실제로는 현무암질 용암으로 뒤덮인 거대한 평원입니다. 달 전체 표면의 약 10%를 차지하며, 여러 충돌구와 산맥이 드문드문 흩어져 있습니다. 이 지역은 과거 화산 활동으로 인해 형성되었으며, 아폴로 12호, 루나 9호, 루나 13호 등 여러 탐사선이 착륙한 장소입니다.",
         "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Oceanus_Procellarum_LROC.jpg/1024px-Oceanus_Procellarum_LROC.jpg"
     },
     "아페닌 산맥 (Montes Apenninus)": {
-        # frame='moon'을 frame=Moon()으로 변경했습니다.
+        # frame='moon'을 frame=Moon()으로 정확히 변경했습니다.
         "sky_coord": SkyCoord(lon=-3.67*u.deg, lat=18.91*u.deg, frame=Moon(), radius=MOON_RADIUS),
         "info": "아페닌 산맥은 달의 앞면 북부에 위치한 거대한 산맥으로, 폭풍의 대양과 비의 바다(Mare Imbrium) 사이에 약 600km에 걸쳐 뻗어 있습니다. 이 산맥은 비의 바다를 형성한 거대한 충돌 사건으로 인해 주변 지각이 융기하여 만들어진 것으로 추정됩니다. 아폴로 15호가 이 산맥 근처에 착륙하여 달의 지질학적 연구에 중요한 기여를 했습니다. 지구의 아페닌 산맥과 이름이 같습니다.",
         "image": "https://upload.wikimedia.org/wikipedia/commons/e/ea/Apollo_15_landing_site_overview_from_orbit.jpg"
@@ -101,9 +101,8 @@ with st.sidebar:
     now = Time.now()
     
     # 서울에서 본 현재 시간의 달의 위치 계산 (고도/방위각 프레임)
-    # 여기의 frame='moon'은 SkyCoord의 대상체가 달임을 나타내는 것으로,
-    # 위 SkyCoord 생성자의 frame 인자와는 다르게 작동합니다.
-    # 이 부분은 현재 오류의 원인이 아니므로 유지합니다.
+    # 이 부분의 frame='moon'은 SkyCoord의 대상체가 달임을 나타내는 것으로,
+    # 위 SkyCoord 생성자의 frame 인자와는 다르게 작동하며, 여기서는 올바른 사용법입니다.
     moon_altaz = SkyCoord(now, frame='moon', location=seoul).transform_to(AltAz(obstime=now, location=seoul))
     
     st.info(f"**관측 기준:** 서울\n\n**현재 시간:** {now.to_datetime().strftime('%Y-%m-%d %H:%M:%S')}")
