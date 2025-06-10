@@ -6,6 +6,8 @@ import astropy.units as u
 from astropy.coordinates import Angle, AltAz, EarthLocation, get_body
 from astropy.time import Time
 
+import numpy as np
+
 # --- 설정 ---
 MOON_RADIUS = 1737.4 * u.km
 
@@ -72,9 +74,14 @@ with st.sidebar:
     if st.button("거리 측정"):
         s_lat, s_lon = LOCATIONS[start]["lat"], LOCATIONS[start]["lon"]
         e_lat, e_lon = LOCATIONS[end]["lat"], LOCATIONS[end]["lon"]
+
+        angle_mid = ((s_lat + e_lat) / 2).to(u.rad).value
+        cos_term = np.cos(angle_mid)
+
         delta_sigma = Angle(
-            ((s_lat - e_lat)**2 + ((s_lon - e_lon) * u.cos((s_lat + e_lat)/2))**2)**0.5
+            ((s_lat - e_lat)**2 + ((s_lon - e_lon) * cos_term)**2)**0.5
         )
+
         distance = (delta_sigma.to(u.rad).value * MOON_RADIUS).to(u.km)
         st.success(f"{start} → {end} 거리: {distance.value:.2f} km")
 
