@@ -6,7 +6,9 @@ from streamlit_folium import st_folium
 import astropy.units as u
 from astropy.coordinates import SkyCoord, EarthLocation, AltAz
 from astropy.time import Time
-from astropy import constants as const # Keep this as the main import for constants
+# astropy.constants는 더 이상 R_moon 때문에 직접 import할 필요가 없습니다.
+# 필요한 다른 상수 (예: 빛의 속도 등)가 있다면 import const를 유지해도 됩니다.
+# from astropy import constants as const 
 
 # --- 페이지 설정 ---
 st.set_page_config(
@@ -16,12 +18,8 @@ st.set_page_config(
 )
 
 # --- 데이터: Astropy 객체로 재구성 ---
-# 이제 좌표는 SkyCoord 객체로, 크기는 단위(u.km)를 붙여 관리합니다.
-# 달의 좌표계(lunarographic)를 사용하고, 달의 반지름을 명시합니다.
-
-# The most direct way to get Moon's radius in recent Astropy versions
-# If this still fails, please check your Astropy version.
-MOON_RADIUS = const.R_moon # <--- Try this again, it's the intended way for many versions
+# MOON_RADIUS를 직접 값으로 정의하여 상수 임포트 오류를 회피합니다.
+MOON_RADIUS = 1737.4 * u.km  # 달의 평균 반지름 (IAU 2015 값)
 
 LOCATIONS_ASTRO = {
     "고요의 바다 (아폴로 11호 착륙지)": {
