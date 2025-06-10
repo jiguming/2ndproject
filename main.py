@@ -2,139 +2,142 @@ import streamlit as st
 import folium
 from streamlit_folium import st_folium
 
-# --- Astropy 라이브러리 임포트 ---
 import astropy.units as u
-# SkyCoord, EarthLocation, AltAz와 함께 Moon 프레임을 임포트합니다.
-from astropy.coordinates import SkyCoord, EarthLocation, AltAz, Moon # Moon 클래스를 임포트합니다.
+from astropy.coordinates import Angle, get_moon, EarthLocation, AltAz
 from astropy.time import Time
-# astropy.constants는 이제 R_moon을 직접 사용하기 때문에 필요하지 않습니다.
+
+# --- 설정: 달 반지름 정의 ---
+MOON_RADIUS = 1737.4 * u.km
 
 # --- 페이지 설정 ---
 st.set_page_config(
     page_title="Astropy 달 탐사 가이드",
-    page_icon="🔭",
+    page_icon="🌕",
     layout="wide"
 )
 
-# --- 데이터: Astropy 객체로 재구성 ---
-# 달의 평균 반지름을 직접 정의합니다. (오류 회피 목적)
-MOON_RADIUS = 1737.4 * u.km  # 달의 평균 반지름 (IAU 2015 값)
-
+# --- 장소 정보 정의 ---
 LOCATIONS_ASTRO = {
     "고요의 바다 (아폴로 11호 착륙지)": {
-        # frame='moon'을 frame=Moon()으로 정확히 변경했습니다.
-        "sky_coord": SkyCoord(lon=23.47297*u.deg, lat=0.67408*u.deg, frame=Moon(), radius=MOON_RADIUS),
-        "info": "고요의 바다 (Mare Tranquillitatis)는 달의 앞면에 있는 거대한 현무암 평원으로, 아폴로 11호가 1969년 7월 20일 인류 최초로 달에 착륙한 역사적인 장소입니다. 이 지역은 비교적 평탄하여 착륙지로 선정되었으며, 어두운 색을 띠는 현무암질 용암으로 덮여 있습니다. '고요의 바다'라는 이름은 과거 달의 어두운 부분이 바다로 오인되었던 것에서 유래합니다. 아폴로 11호의 우주인 닐 암스트롱과 버즈 올드린은 이곳에서 인류의 위대한 발자취를 남겼습니다.",
+        "lat": 0.67408 * u.deg,
+        "lon": 23.47297 * u.deg,
+        "info": """
+        ### 인류의 위대한 첫걸음
+        1969년 7월 20일, 아폴로 11호의 달 착륙선 '이글'호가 이곳에 착륙했습니다. 닐 암스트롱과 버즈 올드린이 인류 최초로 달 표면에 발을 내디딘 역사적인 장소입니다.
+        - **지질학적 특징:** 현무암질 월면석, 월면토
+        """,
         "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Aldrin_with_experiment.jpg/800px-Aldrin_with_experiment.jpg"
     },
     "티코 충돌구 (Tycho Crater)": {
-        # frame='moon'을 frame=Moon()으로 정확히 변경했습니다.
-        "sky_coord": SkyCoord(lon=-11.21*u.deg, lat=-43.43*u.deg, frame=Moon(), radius=MOON_RADIUS),
-        "diameter": 85 * u.km,
-        "info": "티코 충돌구는 달 남반구에 위치한 눈에 띄는 충돌구로, 지름 약 85km에 달하며 주변으로 밝은 광조가 뻗어 나가는 것이 특징입니다. 이 광조는 충돌 시 분출된 물질이 주변 수백 킬로미터에 걸쳐 퍼져 나간 흔적입니다. 티코 충돌구는 비교적 최근에 형성된 충돌구로 추정되며, 충돌구 내부에 중앙 봉우리가 솟아 있습니다. 망원경으로 달을 관측할 때 가장 쉽게 찾을 수 있는 지형 중 하나입니다.",
+        "lat": -43.43 * u.deg,
+        "lon": -11.21 * u.deg,
+        "info": """
+        ### 달에서 가장 밝은 충돌구
+        티코는 지름 약 85km의 젊은 충돌구로, 보름달 때 밝은 광조가 특징입니다.
+        - **지질학적 특징:** 중앙 봉우리, 광조
+        """,
         "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Tycho_crater_on_the_Moon.jpg/1024px-Tycho_crater_on_the_Moon.jpg"
     },
     "코페르니쿠스 충돌구 (Copernicus Crater)": {
-        # frame='moon'을 frame=Moon()으로 정확히 변경했습니다.
-        "sky_coord": SkyCoord(lon=-20.01*u.deg, lat=9.62*u.deg, frame=Moon(), radius=MOON_RADIUS),
-        "diameter": 93 * u.km,
-        "info": "코페르니쿠스 충돌구는 달의 서반구에 위치한 젊고 인상적인 충돌구로, 지름이 약 93km에 이릅니다. 이 충돌구는 잘 보존된 형태와 계단식 테라스, 그리고 중앙의 복잡한 봉우리들이 특징입니다. 또한 티코 충돌구처럼 주변으로 밝은 광조 시스템이 뻗어 나가는 것을 볼 수 있어, 비교적 최근에 형성된 것으로 여겨집니다. '달의 왕자'라고도 불릴 정도로 아름다운 모습을 자랑하며, 달 관측의 중요한 대상 중 하나입니다.",
+        "lat": 9.62 * u.deg,
+        "lon": -20.01 * u.deg,
+        "info": """
+        ### 달의 군주
+        계단식 내부 구조와 중앙 봉우리가 뚜렷한 대형 충돌구입니다.
+        - **지질학적 특징:** 계단식 벽, 복잡한 중앙 구조
+        """,
         "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Copernicus_crater_LROC.png/1024px-Copernicus_crater_LROC.png"
     },
     "폭풍의 대양 (Oceanus Procellarum)": {
-        # frame='moon'을 frame=Moon()으로 정확히 변경했습니다.
-        "sky_coord": SkyCoord(lon=-57.4*u.deg, lat=18.4*u.deg, frame=Moon(), radius=MOON_RADIUS),
-        "info": "폭풍의 대양은 달의 앞면 서쪽에 위치한 가장 크고 광활한 달의 바다(Mare)입니다. '바다'라는 이름이 붙었지만 실제로는 현무암질 용암으로 뒤덮인 거대한 평원입니다. 달 전체 표면의 약 10%를 차지하며, 여러 충돌구와 산맥이 드문드문 흩어져 있습니다. 이 지역은 과거 화산 활동으로 인해 형성되었으며, 아폴로 12호, 루나 9호, 루나 13호 등 여러 탐사선이 착륙한 장소입니다.",
+        "lat": 18.4 * u.deg,
+        "lon": -57.4 * u.deg,
+        "info": """
+        ### 달에서 가장 큰 '바다'
+        거대한 현무암질 평원이며 KREEP 물질이 풍부한 지역입니다.
+        - **지질학적 특징:** 광활한 현무암 지대
+        """,
         "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Oceanus_Procellarum_LROC.jpg/1024px-Oceanus_Procellarum_LROC.jpg"
     },
     "아페닌 산맥 (Montes Apenninus)": {
-        # frame='moon'을 frame=Moon()으로 정확히 변경했습니다.
-        "sky_coord": SkyCoord(lon=-3.67*u.deg, lat=18.91*u.deg, frame=Moon(), radius=MOON_RADIUS),
-        "info": "아페닌 산맥은 달의 앞면 북부에 위치한 거대한 산맥으로, 폭풍의 대양과 비의 바다(Mare Imbrium) 사이에 약 600km에 걸쳐 뻗어 있습니다. 이 산맥은 비의 바다를 형성한 거대한 충돌 사건으로 인해 주변 지각이 융기하여 만들어진 것으로 추정됩니다. 아폴로 15호가 이 산맥 근처에 착륙하여 달의 지질학적 연구에 중요한 기여를 했습니다. 지구의 아페닌 산맥과 이름이 같습니다.",
+        "lat": 18.91 * u.deg,
+        "lon": -3.67 * u.deg,
+        "info": """
+        ### 아폴로 15호의 탐사지
+        험준한 고산지대로, 달 초기 지각물질 연구에 중요합니다.
+        - **지질학적 특징:** 아노르토사이트, 협곡
+        """,
         "image": "https://upload.wikimedia.org/wikipedia/commons/e/ea/Apollo_15_landing_site_overview_from_orbit.jpg"
     }
 }
 
-# Folium 지도 표시에 사용할 위도/경도 리스트
-def get_folium_coords(astro_location):
-    s_coord = astro_location['sky_coord']
-    return [s_coord.lat.value, s_coord.lon.value]
+# --- 좌표 변환 함수 ---
+def get_folium_coords(location):
+    return [location["lat"].value, location["lon"].value]
 
-# --- 앱 UI 구성 ---
-st.title("🔭 Astropy 연동 달 탐사 가이드")
-st.markdown("`Astropy` 라이브러리를 활용하여 과학적인 계산 기능을 추가한 달 탐사 가이드입니다.")
+# --- UI 구성 ---
+st.title("🌕 Astropy 기반 달 탐사 가이드")
+st.markdown("Astropy와 Folium을 활용한 과학적이고 직관적인 달 탐사 지도입니다.")
 
-# --- 사이드바 ---
 with st.sidebar:
     st.header("🚀 탐험지 선택")
-    location_name = st.selectbox(
-        "가고 싶은 곳을 고르세요:",
-        options=list(LOCATIONS_ASTRO.keys())
-    )
-    
-    st.markdown("---")
+    location_name = st.selectbox("가고 싶은 장소를 선택하세요:", options=list(LOCATIONS_ASTRO.keys()))
 
-    # --- 기능 2: 거리 계산기 ---
+    st.markdown("---")
     st.header("📏 달 표면 거리 계산기")
-    start_point = st.selectbox("출발지:", options=list(LOCATIONS_ASTRO.keys()), index=0)
-    end_point = st.selectbox("도착지:", options=list(LOCATIONS_ASTRO.keys()), index=1)
-    
+    start = st.selectbox("출발지:", options=list(LOCATIONS_ASTRO.keys()), index=0)
+    end = st.selectbox("도착지:", options=list(LOCATIONS_ASTRO.keys()), index=1)
+
     if st.button("거리 계산"):
-        coord1 = LOCATIONS_ASTRO[start_point]['sky_coord']
-        coord2 = LOCATIONS_ASTRO[end_point]['sky_coord']
-        
-        # 두 지점의 각도 차이 계산
-        separation_angle = coord1.separation(coord2)
-        # 각도와 반지름을 이용해 거리 계산 (s = r * θ)
-        distance = (separation_angle.to(u.rad).value * MOON_RADIUS).to(u.km)
-        
-        st.success(f"**{start_point}**에서 **{end_point}**까지의 거리는 약 **{distance.value:.2f} km** 입니다.")
+        start_lat = LOCATIONS_ASTRO[start]["lat"]
+        start_lon = LOCATIONS_ASTRO[start]["lon"]
+        end_lat = LOCATIONS_ASTRO[end]["lat"]
+        end_lon = LOCATIONS_ASTRO[end]["lon"]
+
+        # 대략적인 구면 거리 계산
+        delta_sigma = Angle(
+            ((start_lat - end_lat)**2 + ((start_lon - end_lon) * u.cos((start_lat + end_lat)/2))**2)**0.5
+        )
+        distance = (delta_sigma.to(u.rad).value * MOON_RADIUS).to(u.km)
+
+        st.success(f"**{start}** → **{end}** 거리: **{distance.value:.2f} km**")
 
     st.markdown("---")
+    st.header("🌝 현재 달의 위치 (지구 기준)")
 
-    # --- 기능 3: 실시간 달 위치 ---
-    st.header("🛰️ 현재 달의 위치")
-    # 관측 위치: 서울 (EarthLocation)
-    seoul = EarthLocation(lat='37.5665'*u.deg, lon='126.9780'*u.deg, height=38*u.m)
-    
-    # 현재 시간
+    seoul = EarthLocation(lat=37.5665*u.deg, lon=126.9780*u.deg, height=38*u.m)
     now = Time.now()
-    
-    # 서울에서 본 현재 시간의 달의 위치 계산 (고도/방위각 프레임)
-    # 이 부분의 frame='moon'은 SkyCoord의 대상체가 달임을 나타내는 것으로,
-    # 위 SkyCoord 생성자의 frame 인자와는 다르게 작동하며, 여기서는 올바른 사용법입니다.
-    moon_altaz = SkyCoord(now, frame='moon', location=seoul).transform_to(AltAz(obstime=now, location=seoul))
-    
-    st.info(f"**관측 기준:** 서울\n\n**현재 시간:** {now.to_datetime().strftime('%Y-%m-%d %H:%M:%S')}")
-    st.metric(label="달의 고도 (Altitude)", value=f"{moon_altaz.alt.deg:.2f}°")
-    st.metric(label="달의 방위각 (Azimuth)", value=f"{moon_altaz.az.deg:.2f}°")
-    st.caption("고도: 지평선 위 각도. 90°가 천정입니다.\n방위각: 북쪽(0°)에서 동쪽으로 잰 각도입니다.")
 
+    moon = get_moon(now, location=seoul)
+    moon_altaz = moon.transform_to(AltAz(obstime=now, location=seoul))
 
-# 선택된 장소의 정보 가져오기
-selected_location = LOCATIONS_ASTRO[location_name]
-coords = get_folium_coords(selected_location) # Folium용 좌표 추출
-info_text = selected_location["info"]
-image_url = selected_location["image"]
+    st.metric("달의 고도 (Altitude)", f"{moon_altaz.alt.deg:.2f}°")
+    st.metric("달의 방위각 (Azimuth)", f"{moon_altaz.az.deg:.2f}°")
+    st.caption("※ 서울 기준. 고도: 천정 기준 각도, 방위각: 북쪽 기준 시계방향 각도.")
 
-# --- 메인 화면 ---
+# --- 본문 지도 및 설명 ---
+selected = LOCATIONS_ASTRO[location_name]
+coords = get_folium_coords(selected)
+
 col1, col2 = st.columns([0.6, 0.4])
 
 moon_tiles = "https://s3.amazonaws.com/opmbuilder/301_moon/tiles/w/{z}/{x}/{y}.png"
 moon_attribution = "LRO/LROC/GSFC/ASU"
 
 with col1:
-    st.subheader(f"🛰️ {location_name} 상세 탐험 지도")
-    m_detail = folium.Map(location=coords, zoom_start=6, tiles=moon_tiles, attr=moon_attribution)
+    st.subheader(f"🗺️ {location_name} 지도")
+    m = folium.Map(location=coords, zoom_start=6, tiles=moon_tiles, attr=moon_attribution)
     folium.Marker(
         location=coords,
-        popup=f"<strong>{location_name}</strong>",
-        tooltip="클릭해서 자세히 보기",
-        icon=folium.Icon(color='red', icon='rocket', prefix='fa')
-    ).add_to(m_detail)
-    st_folium(m_detail, width=800, height=600)
+        tooltip=location_name,
+        popup=location_name,
+        icon=folium.Icon(color='red', icon='star')
+    ).add_to(m)
+    st_folium(m, width=800, height=500)
 
 with col2:
-    st.subheader("📖 상세 정보")
-    st.image(image_url, caption=f"{location_name}의 모습")
-    st.markdown(info_text, unsafe_allow_html=True)
+    st.subheader("📖 상세 설명")
+    st.image(selected["image"], caption=location_name)
+    st.markdown(selected["info"], unsafe_allow_html=True)
+
+st.markdown("---")
+st.info("이 웹앱은 Streamlit, Folium, Astropy를 이용하여 제작되었습니다. 지도 타일은 LROC Global Mosaic을 기반으로 합니다.")
