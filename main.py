@@ -62,6 +62,6 @@ st_folium(m, width=1100, height=500)
 st.markdown(f"## 🔍 {selected['name']}")
 st.markdown(selected["description"])
 st.markdown("### 📸 대표 이미지")
+# 이미지 출력 부분만 업데이트
 for img in selected["images"]:
-    st.image(img, use_column_width=True)
-
+    st.image(img, use_container_width=True)
