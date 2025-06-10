@@ -62,7 +62,12 @@ selected_data = next((p for p in places if p["name"] == selected_place), None)
 map_center = selected_data["location"] if selected_data else [64.9631, -19.0208]
 
 # 폴리움 지도 생성
-m = folium.Map(location=map_center, zoom_start=7, tiles="Stamen Terrain")
+m = folium.Map(
+    location=map_center,
+    zoom_start=7,
+    tiles="Stamen Terrain",
+    attr="Map tiles by Stamen Design, CC BY 3.0 — Map data © OpenStreetMap contributors"
+)
 
 # 마커 추가
 for place in places:
