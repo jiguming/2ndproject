@@ -3,4 +3,4 @@ folium
 streamlit-folium
 yfinance
 plotly
-astropy
+Astropy
