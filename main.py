@@ -6,9 +6,7 @@ from streamlit_folium import st_folium
 import astropy.units as u
 from astropy.coordinates import SkyCoord, EarthLocation, AltAz
 from astropy.time import Time
-# --- 변경된 부분: const.iau.R_moon을 사용하기 위해 iau를 명시적으로 임포트 ---
-from astropy import constants as const
-from astropy.constants import iau # Add this line
+from astropy import constants as const # Keep this line
 
 # --- 페이지 설정 ---
 st.set_page_config(
@@ -20,7 +18,7 @@ st.set_page_config(
 # --- 데이터: Astropy 객체로 재구성 ---
 # 이제 좌표는 SkyCoord 객체로, 크기는 단위(u.km)를 붙여 관리합니다.
 # 달의 좌표계(lunarographic)를 사용하고, 달의 반지름을 명시합니다.
-MOON_RADIUS = iau.R_moon # Change this line from const.R_moon to iau.R_moon
+MOON_RADIUS = const.R_moon # This should now work directly
 
 LOCATIONS_ASTRO = {
     "고요의 바다 (아폴로 11호 착륙지)": {
